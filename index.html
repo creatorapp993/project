@@ -168,7 +168,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 120px 2rem 80px;
+    padding: 120px 2rem 40px;
     position: relative;
   }
 
@@ -564,9 +564,10 @@
 
   /* ── CONFIGURATOR ── */
   #configurator {
-    padding: 6rem 2rem;
+    padding: 2rem 2rem 4rem;
     max-width: 1000px;
     margin: 0 auto;
+    scroll-margin-top: 64px;
   }
 
   .config-container {
@@ -577,7 +578,7 @@
   }
 
   .config-header {
-    padding: 2.5rem 3rem;
+    padding: 1.5rem 2.5rem;
     border-bottom: 1px solid var(--border);
     background: var(--bg-surface);
   }
@@ -599,7 +600,7 @@
     display: flex;
     align-items: center;
     gap: 0;
-    margin-top: 2rem;
+    margin-top: 1.25rem;
   }
 
   .progress-step {
@@ -659,9 +660,8 @@
 
   .progress-connector.done { background: var(--cyan); opacity: 0.4; }
 
-  /* Config Body */
   .config-body {
-    padding: 3rem;
+    padding: 2rem 2.5rem;
   }
 
   /* Step panels */
@@ -681,14 +681,14 @@
   .app-selector-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .app-select-card {
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 1rem 1.25rem;
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
@@ -726,7 +726,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.5rem;
     color: var(--cyan);
     background: rgba(0, 212, 255, 0.05);
     position: relative;
@@ -773,7 +773,7 @@
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 
   .form-group {
@@ -963,7 +963,7 @@
 
   /* Nav buttons */
   .config-footer {
-    padding: 1.5rem 3rem;
+    padding: 1.25rem 2.5rem;
     border-top: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -1152,7 +1152,6 @@
     Supercool
   </div>
 
-  <a href="#configurator" class="nav-cta">Configure Mission</a>
 </nav>
 
 <!-- ══ HERO ══ -->
@@ -1209,12 +1208,6 @@
 
 <!-- ══ CONFIGURATOR ══ -->
 <section id="configurator">
-  <div class="section-header" style="margin-bottom:3rem;">
-    <div class="section-label">Mission Configurator</div>
-    <h2 class="section-title">Configure Your Payload<br>in Three Steps</h2>
-    <p class="section-sub">Tell us what you're flying. We'll map it to our cryogenic bus platform.</p>
-  </div>
-
   <div class="config-container">
     <div class="config-header">
       <div class="config-title">Mission Configuration Tool</div>
@@ -1247,7 +1240,7 @@
         </div>
 
         <div class="app-selector-grid">
-          <div class="app-select-card" data-app="quantum-computing" onclick="selectApp(this)">
+          <div class="app-select-card selected" data-app="quantum-computing" onclick="selectApp(this)">
             <div class="check-mark">
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#04080F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
@@ -1322,7 +1315,7 @@
           <p style="font-size:0.82rem;color:var(--text-secondary);">Enter your payload parameters. Our system will validate against the Supercool cryo bus envelope.</p>
         </div>
 
-        <div class="constraint-note" style="margin-bottom:1.75rem;">
+        <div class="constraint-note" style="margin-bottom:1.25rem;">
           ⚡ Maximum Payload Envelope: 10 × 10 × 5 cm &nbsp;|&nbsp; Max Mass: 500 g &nbsp;|&nbsp; Power: up to 15 W
         </div>
 
@@ -1359,21 +1352,6 @@
               <option value="2yr">2 Years</option>
               <option value="3yr+">3+ Years</option>
             </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Data Output Frequency</label>
-            <select class="form-select" id="data-freq">
-              <option value="continuous">Continuous</option>
-              <option value="daily" selected>Daily Downlink</option>
-              <option value="weekly">Weekly Downlink</option>
-              <option value="on-demand">On Demand</option>
-            </select>
-          </div>
-
-          <div class="form-group full">
-            <label class="form-label">Special Requirements <span>(optional)</span></label>
-            <textarea class="form-textarea" id="special-reqs" placeholder="e.g. radiation hardening, specific frequency bands, vibration sensitivity thresholds..."></textarea>
           </div>
         </div>
       </div>
@@ -1609,7 +1587,7 @@
 
   // ── STATE ──
   let currentStep = 1;
-  let selectedApp = null;
+  let selectedApp = 'quantum-computing';
 
   const appNames = {
     'quantum-computing': 'Quantum Computing',
@@ -1703,6 +1681,7 @@
       showPanel(2);
       document.getElementById('btn-back').classList.remove('hidden');
       updateProgress();
+      document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' });
     } else if (currentStep === 2) {
       runConfiguration();
     }
@@ -1741,6 +1720,11 @@
       showPanel(3);
       document.getElementById('btn-back').classList.remove('hidden');
       document.getElementById('btn-next').classList.add('hidden');
+      // Scroll so the result is nicely centered
+      const step3 = document.getElementById('step-3');
+      const rect = step3.getBoundingClientRect();
+      const scrollTarget = window.scrollY + rect.top - 80;
+      window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
     }, 800);
   }
 
@@ -1772,8 +1756,9 @@
 
   function startOver() {
     currentStep = 1;
-    selectedApp = null;
+    selectedApp = 'quantum-computing';
     document.querySelectorAll('.app-select-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector('.app-select-card[data-app="quantum-computing"]').classList.add('selected');
     document.getElementById('btn-back').classList.add('hidden');
     document.getElementById('btn-next').classList.remove('hidden');
     document.getElementById('btn-next').innerHTML = 'Continue <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
