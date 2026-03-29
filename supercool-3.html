@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supercool — Cryogenic Platform for Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --bg-deep: #04080F;
+    --bg-surface: #0B1120;
+    --bg-card: #0E1628;
+    --bg-card-hover: #111D34;
+    --cyan: #00D4FF;
+    --cyan-dim: #0099BB;
+    --cyan-glow: rgba(0, 212, 255, 0.15);
+    --cyan-glow-strong: rgba(0, 212, 255, 0.3);
+    --blue-mid: #1A4AFF;
+    --text-primary: #F0F4FF;
+    --text-secondary: #7A90B0;
+    --text-muted: #4A5D7A;
+    --border: rgba(255,255,255,0.06);
+    --border-cyan: rgba(0, 212, 255, 0.25);
+    --amber: #F5A623;
+    --gold: #C9A44A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── STARFIELD ── */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur, 4s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: var(--base-opacity, 0.6);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--base-opacity, 0.6); transform: scale(1); }
+    50% { opacity: calc(var(--base-opacity, 0.6) * 0.2); transform: scale(0.8); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 64px;
+    background: rgba(4, 8, 15, 0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nav-logo .logo-mark {
+    width: 28px; height: 28px;
+    border: 2px solid var(--cyan);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-logo .logo-mark::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--cyan);
+    border-radius: 2px;
+    opacity: 0.2;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--cyan); }
+
+  .nav-cta {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--bg-deep);
+    background: var(--cyan);
+    padding: 0.5rem 1.25rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: opacity 0.2s, box-shadow 0.2s;
+  }
+
+  .nav-cta:hover {
+    opacity: 0.9;
+    box-shadow: 0 0 20px var(--cyan-glow-strong);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 2rem 80px;
+    position: relative;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--cyan);
+    border: 1px solid var(--border-cyan);
+    background: rgba(0, 212, 255, 0.06);
+    padding: 0.4rem 0.9rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+  }
+
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    max-width: 900px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title .accent { color: var(--cyan); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    font-weight: 300;
+    color: var(--text-secondary);
+    max-width: 580px;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--bg-deep);
+    background: var(--cyan);
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 30px var(--cyan-glow-strong), 0 4px 20px rgba(0,0,0,0.4);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--text-secondary);
+    background: transparent;
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--border-cyan);
+    color: var(--cyan);
+    background: var(--cyan-glow);
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-card);
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 1.25rem 1.5rem;
+    border-right: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--cyan);
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-top: 0.75rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── APPLICATIONS ── */
+  #applications {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .app-card {
+    background: var(--bg-card);
+    padding: 2rem;
+    transition: background 0.2s;
+    cursor: default;
+  }
+
+  .app-card:hover { background: var(--bg-card-hover); }
+
+  .app-icon-wrap {
+    width: 44px; height: 44px;
+    border: 1px solid var(--border-cyan);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: rgba(0, 212, 255, 0.05);
+    color: var(--cyan);
+  }
+
+  .app-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .app-card p {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ── HOW IT WORKS ── */
+  #how-it-works {
+    padding: 6rem 2rem;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 212, 255, 0.03) 50%, transparent 100%);
+  }
+
+  .steps-row {
+    display: flex;
+    gap: 0;
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .steps-row::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-cyan), transparent);
+  }
+
+  .step-item {
+    flex: 1;
+    text-align: center;
+    padding: 0 1.5rem;
+    position: relative;
+  }
+
+  .step-num {
+    width: 56px; height: 56px;
+    border: 1px solid var(--border-cyan);
+    border-radius: 50%;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-item h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .step-item p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ── BUILT FOR ── */
+  #built-for {
+    padding: 5rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .built-for-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .built-for-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.75rem;
+    transition: border-color 0.2s;
+  }
+
+  .built-for-card:hover { border-color: var(--border-cyan); }
+
+  .built-for-card .cat-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.75rem;
+  }
+
+  .built-for-card h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .built-for-card .names {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ── MARKET BANNER ── */
+  #market {
+    padding: 5rem 2rem;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .market-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .market-stat {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-card);
+    transition: border-color 0.2s;
+  }
+
+  .market-stat:hover { border-color: var(--border-cyan); }
+
+  .market-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .market-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── CONFIGURATOR ── */
+  #configurator {
+    padding: 6rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .config-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .config-header {
+    padding: 2.5rem 3rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+  }
+
+  .config-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .config-sub {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 2rem;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  .progress-step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .progress-step.active .progress-step-num {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: var(--cyan-glow);
+  }
+
+  .progress-step.done .progress-step-num {
+    border-color: var(--cyan);
+    background: var(--cyan);
+    color: var(--bg-deep);
+  }
+
+  .progress-step-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.3s;
+  }
+
+  .progress-step.active .progress-step-label { color: var(--cyan); }
+  .progress-step.done .progress-step-label { color: var(--text-secondary); }
+
+  .progress-connector {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin: 0 0.5rem;
+    transition: background 0.3s;
+  }
+
+  .progress-connector.done { background: var(--cyan); opacity: 0.4; }
+
+  /* Config Body */
+  .config-body {
+    padding: 3rem;
+  }
+
+  /* Step panels */
+  .step-panel {
+    display: none;
+    animation: fadeSlide 0.35s ease;
+  }
+
+  .step-panel.active { display: block; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* App selector grid */
+  .app-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .app-select-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .app-select-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--cyan-glow) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .app-select-card:hover {
+    border-color: var(--border-cyan);
+    transform: translateY(-2px);
+  }
+
+  .app-select-card:hover::before { opacity: 1; }
+
+  .app-select-card.selected {
+    border-color: var(--cyan);
+    background: rgba(0, 212, 255, 0.06);
+    box-shadow: 0 0 0 1px var(--cyan), inset 0 0 20px rgba(0, 212, 255, 0.05);
+  }
+
+  .app-select-card.selected::before { opacity: 1; }
+
+  .app-select-icon {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border-cyan);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    color: var(--cyan);
+    background: rgba(0, 212, 255, 0.05);
+    position: relative;
+    z-index: 1;
+  }
+
+  .app-select-card.selected .app-select-icon {
+    background: rgba(0, 212, 255, 0.15);
+  }
+
+  .app-select-card h4 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.35rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .app-select-card p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+
+  .check-mark {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--cyan);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .app-select-card.selected .check-mark { display: flex; }
+
+  /* Form fields */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .form-label span {
+    font-family: 'DM Sans', sans-serif;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    appearance: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  }
+
+  .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237A90B0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .form-select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .dims-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .dim-sep {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    text-align: center;
+    font-weight: 300;
+  }
+
+  .constraint-note {
+    font-size: 0.75rem;
+    color: var(--cyan);
+    background: rgba(0, 212, 255, 0.06);
+    border: 1px solid var(--border-cyan);
+    border-radius: 4px;
+    padding: 0.6rem 1rem;
+    margin-top: 0.25rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.03em;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .slider-row input[type=range] {
+    flex: 1;
+    appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--cyan);
+    border: 2px solid var(--bg-deep);
+    box-shadow: 0 0 8px var(--cyan-glow-strong);
+  }
+
+  .slider-val {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--cyan);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* STEP 3 - RESULT */
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .sat-viz {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+  }
+
+  .result-cards { display: flex; flex-direction: column; gap: 1rem; }
+
+  .result-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .result-card-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-row:last-child { border-bottom: none; }
+
+  .result-key {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  .result-val {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .result-val.highlight { color: var(--cyan); }
+  .result-val.amber { color: var(--amber); }
+
+  /* Nav buttons */
+  .config-footer {
+    padding: 1.5rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-surface);
+  }
+
+  .btn-ghost {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--border-cyan);
+    color: var(--text-primary);
+  }
+
+  /* Loading */
+  .loading-screen {
+    text-align: center;
+    padding: 4rem 2rem;
+    display: none;
+  }
+
+  .loading-screen.active { display: block; }
+
+  .loading-ring {
+    width: 60px; height: 60px;
+    border: 2px solid var(--border);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+  }
+
+  .loading-dots::after {
+    content: '...';
+    animation: dots 1.5s steps(4, end) infinite;
+  }
+
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 8, 15, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-cyan);
+    border-radius: 12px;
+    padding: 3rem;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-check {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 212, 255, 0.1);
+    border: 2px solid var(--cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: var(--cyan);
+  }
+
+  .modal-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .modal-sub {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .mission-id {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    background: rgba(0, 212, 255, 0.06);
+    border: 1px solid var(--border-cyan);
+    padding: 0.6rem 1.25rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-logo {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* utility */
+  .text-cyan { color: var(--cyan); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div id="starfield"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="1" y="1" width="12" height="12" rx="2" stroke="#00D4FF" stroke-width="1.5" fill="none"/>
+        <rect x="4" y="4" width="6" height="6" rx="1" fill="#00D4FF" opacity="0.8"/>
+      </svg>
+    </div>
+    Supercool
+  </div>
+
+  <a href="#configurator" class="nav-cta">Configure Mission</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-glow"></div>
+
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    TRL 5 · Benchtop Prototype · Flight-Ready in 18 Months
+  </div>
+
+  <h1 class="hero-title">
+    The First <span class="accent">Cryogenic</span><br>Platform for Space
+  </h1>
+
+  <p class="hero-sub">
+    We host your quantum payload in a 12&nbsp;mK cold box aboard our satellite bus — launched, operated, and data-downlinked on your behalf.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#configurator" class="btn-primary">
+      Configure Your Mission
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value">12–20 mK</div>
+      <div class="stat-label">Operating Temperature</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">5×10×10 cm</div>
+      <div class="stat-label">Payload Envelope</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">8 µK rms</div>
+      <div class="stat-label">Thermal Stability</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">LEO</div>
+      <div class="stat-label">Orbit Class</div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+<!-- ══ CONFIGURATOR ══ -->
+<section id="configurator">
+  <div class="section-header" style="margin-bottom:3rem;">
+    <div class="section-label">Mission Configurator</div>
+    <h2 class="section-title">Configure Your Payload<br>in Three Steps</h2>
+    <p class="section-sub">Tell us what you're flying. We'll map it to our cryogenic bus platform.</p>
+  </div>
+
+  <div class="config-container">
+    <div class="config-header">
+      <div class="config-title">Mission Configuration Tool</div>
+      <div class="config-sub">Payload analysis system — v2.1.0 // Supercool Space Technologies</div>
+
+      <div class="progress-bar">
+        <div class="progress-step active" id="prog-1">
+          <div class="progress-step-num">1</div>
+          <div class="progress-step-label">Application</div>
+        </div>
+        <div class="progress-connector" id="conn-1"></div>
+        <div class="progress-step" id="prog-2">
+          <div class="progress-step-num">2</div>
+          <div class="progress-step-label">Payload Specs</div>
+        </div>
+        <div class="progress-connector" id="conn-2"></div>
+        <div class="progress-step" id="prog-3">
+          <div class="progress-step-num">3</div>
+          <div class="progress-step-label">Configuration</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="config-body">
+      <!-- STEP 1 -->
+      <div class="step-panel active" id="step-1">
+        <div style="margin-bottom:1.5rem;">
+          <h3 style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Select Your Application</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);">Choose the primary mission profile for your payload.</p>
+        </div>
+
+        <div class="app-selector-grid">
+          <div class="app-select-card" data-app="quantum-computing" onclick="selectApp(this)">
+            <div class="check-mark">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#04080F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-select-icon">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><circle cx="17.5" cy="17.5" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
+            <h4>Quantum Computing</h4>
+            <p>Processor validation & coherence research</p>
+          </div>
+
+          <div class="app-select-card" data-app="qkd" onclick="selectApp(this)">
+            <div class="check-mark">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#04080F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-select-icon">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h4>Quantum Key Distribution</h4>
+            <p>Orbital quantum encryption links</p>
+          </div>
+
+          <div class="app-select-card" data-app="quantum-clock" onclick="selectApp(this)">
+            <div class="check-mark">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#04080F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-select-icon">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h4>Quantum Clocks / GPS</h4>
+            <p>Millimeter-level navigation precision</p>
+          </div>
+
+          <div class="app-select-card" data-app="hyperspectral" onclick="selectApp(this)">
+            <div class="check-mark">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#04080F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-select-icon">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M1 6s4-2 11-2 11 2 11 2v12s-4-2-11-2S1 18 1 18V6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 6l11 6 11-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h4>Hyperspectral Imaging</h4>
+            <p>Earth observation & remote sensing</p>
+          </div>
+
+          <div class="app-select-card" data-app="ir-defense" onclick="selectApp(this)">
+            <div class="check-mark">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#04080F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-select-icon">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h4>IR Detection / Defense</h4>
+            <p>Missile tracking & early warning</p>
+          </div>
+
+          <div class="app-select-card" data-app="custom" onclick="selectApp(this)">
+            <div class="check-mark">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#04080F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-select-icon">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h4>Custom / Research</h4>
+            <p>Academic & experimental payloads</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" id="step-2">
+        <div style="margin-bottom:1.75rem;">
+          <h3 style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Payload Specifications</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);">Enter your payload parameters. Our system will validate against the Supercool cryo bus envelope.</p>
+        </div>
+
+        <div class="constraint-note" style="margin-bottom:1.75rem;">
+          ⚡ Maximum Payload Envelope: 10 × 10 × 5 cm &nbsp;|&nbsp; Max Mass: 500 g &nbsp;|&nbsp; Power: up to 15 W
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Payload Mass <span>(grams)</span></label>
+            <div class="slider-row">
+              <input type="range" min="1" max="500" value="50" id="mass-slider" oninput="document.getElementById('mass-val').textContent = this.value + ' g'">
+              <span class="slider-val" id="mass-val">50 g</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Power Requirement <span>(watts)</span></label>
+            <input type="number" class="form-input" id="power-input" min="0.1" max="15" step="0.1" value="2.5" placeholder="e.g. 2.5">
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label">Payload Dimensions <span>— L × W × H (cm, max 10 × 10 × 5)</span></label>
+            <div class="dims-row">
+              <input type="number" class="form-input" id="dim-l" min="0.1" max="10" step="0.1" value="8" placeholder="L">
+              <span class="dim-sep">×</span>
+              <input type="number" class="form-input" id="dim-w" min="0.1" max="10" step="0.1" value="6" placeholder="W">
+              <span class="dim-sep">×</span>
+              <input type="number" class="form-input" id="dim-h" min="0.1" max="5" step="0.1" value="3" placeholder="H">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mission Duration</label>
+            <select class="form-select" id="mission-duration">
+              <option value="6mo">6 Months</option>
+              <option value="1yr" selected>1 Year</option>
+              <option value="2yr">2 Years</option>
+              <option value="3yr+">3+ Years</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Data Output Frequency</label>
+            <select class="form-select" id="data-freq">
+              <option value="continuous">Continuous</option>
+              <option value="daily" selected>Daily Downlink</option>
+              <option value="weekly">Weekly Downlink</option>
+              <option value="on-demand">On Demand</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label">Special Requirements <span>(optional)</span></label>
+            <textarea class="form-textarea" id="special-reqs" placeholder="e.g. radiation hardening, specific frequency bands, vibration sensitivity thresholds..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 LOADING -->
+      <div class="loading-screen" id="loading-screen">
+        <div class="loading-ring"></div>
+        <div class="loading-text">Configuring spacecraft bus<span class="loading-dots"></span></div>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;font-family:'Inter',sans-serif;letter-spacing:0.05em;">Running thermal model and power budget analysis</p>
+      </div>
+
+      <!-- STEP 3 RESULT -->
+      <div class="step-panel" id="step-3">
+        <div style="margin-bottom:1.75rem;">
+          <h3 style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Mission Configuration</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);">Your payload is compatible with the Supercool SC-1 bus. Configuration summary below.</p>
+        </div>
+
+        <div class="result-grid">
+          <!-- SAT SVG -->
+          <div class="sat-viz">
+            <svg viewBox="0 0 260 260" width="220" height="220" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="bodyGrad" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" stop-color="#1A4AFF" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#0B1120" stop-opacity="0"/>
+                </radialGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <!-- Body glow -->
+              <ellipse cx="130" cy="140" rx="70" ry="50" fill="url(#bodyGrad)" opacity="0.5"/>
+
+              <!-- LEFT SOLAR PANEL -->
+              <rect x="14" y="110" width="68" height="46" rx="2" fill="#0E1628" stroke="#1A3366" stroke-width="1"/>
+              <!-- panel cells -->
+              <line x1="14" y1="118" x2="82" y2="118" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="14" y1="126" x2="82" y2="126" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="14" y1="134" x2="82" y2="134" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="14" y1="142" x2="82" y2="142" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="14" y1="150" x2="82" y2="150" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="31" y1="110" x2="31" y2="156" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="48" y1="110" x2="48" y2="156" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="65" y1="110" x2="65" y2="156" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <!-- panel accent -->
+              <rect x="14" y="110" width="68" height="46" rx="2" fill="none" stroke="#1E40AF" stroke-width="1.5"/>
+
+              <!-- RIGHT SOLAR PANEL -->
+              <rect x="178" y="110" width="68" height="46" rx="2" fill="#0E1628" stroke="#1A3366" stroke-width="1"/>
+              <line x1="178" y1="118" x2="246" y2="118" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="178" y1="126" x2="246" y2="126" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="178" y1="134" x2="246" y2="134" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="178" y1="142" x2="246" y2="142" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="178" y1="150" x2="246" y2="150" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="195" y1="110" x2="195" y2="156" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="212" y1="110" x2="212" y2="156" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="229" y1="110" x2="229" y2="156" stroke="#1A4AFF" stroke-width="0.5" opacity="0.5"/>
+              <rect x="178" y="110" width="68" height="46" rx="2" fill="none" stroke="#1E40AF" stroke-width="1.5"/>
+
+              <!-- Panel connectors -->
+              <rect x="82" y="127" width="14" height="12" rx="1" fill="#0B1120" stroke="#1E3A5F" stroke-width="1"/>
+              <rect x="164" y="127" width="14" height="12" rx="1" fill="#0B1120" stroke="#1E3A5F" stroke-width="1"/>
+
+              <!-- MAIN BUS BODY -->
+              <rect x="96" y="85" width="68" height="96" rx="4" fill="#0E1628" stroke="#1E3A5F" stroke-width="1.5"/>
+
+              <!-- CRYO BOX (highlighted) -->
+              <rect x="104" y="110" width="52" height="46" rx="3" fill="rgba(0,212,255,0.07)" stroke="#00D4FF" stroke-width="1.5" filter="url(#glow)"/>
+              <!-- cryo box inner -->
+              <rect x="109" y="115" width="42" height="36" rx="2" fill="rgba(0,212,255,0.04)" stroke="#00D4FF" stroke-width="0.75" stroke-dasharray="3,2"/>
+              <!-- cryo glow dot -->
+              <circle cx="130" cy="133" r="4" fill="#00D4FF" opacity="0.6">
+                <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="130" cy="133" r="8" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.3">
+                <animate attributeName="r" values="6;12;6" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
+              </circle>
+
+              <!-- CRYO BOX LABEL -->
+              <text x="130" y="168" font-family="monospace" font-size="6" fill="#00D4FF" text-anchor="middle" opacity="0.8">CRYO BOX · 12–20 mK</text>
+
+              <!-- Bus details top -->
+              <rect x="104" y="92" width="52" height="14" rx="2" fill="#0B1120" stroke="#1E3A5F" stroke-width="1"/>
+              <text x="130" y="102" font-family="monospace" font-size="6" fill="#4A6A9A" text-anchor="middle">SC-1 BUS</text>
+
+              <!-- Bus details bottom -->
+              <rect x="104" y="160" width="24" height="14" rx="2" fill="#0B1120" stroke="#1E3A5F" stroke-width="1"/>
+              <rect x="132" y="160" width="24" height="14" rx="2" fill="#0B1120" stroke="#1E3A5F" stroke-width="1"/>
+              <text x="116" y="170" font-family="monospace" font-size="5.5" fill="#4A6A9A" text-anchor="middle">COMM</text>
+              <text x="144" y="170" font-family="monospace" font-size="5.5" fill="#4A6A9A" text-anchor="middle">PROP</text>
+
+              <!-- ANTENNA -->
+              <line x1="130" y1="85" x2="130" y2="62" stroke="#1E3A5F" stroke-width="1.5"/>
+              <circle cx="130" cy="60" r="4" fill="none" stroke="#00D4FF" stroke-width="1.5" opacity="0.7"/>
+              <circle cx="130" cy="60" r="8" fill="none" stroke="#00D4FF" stroke-width="0.75" opacity="0.3"/>
+              <circle cx="130" cy="60" r="14" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.15"/>
+
+              <!-- Star bg dots -->
+              <circle cx="20" cy="30" r="1" fill="white" opacity="0.4"/>
+              <circle cx="50" cy="55" r="0.7" fill="white" opacity="0.3"/>
+              <circle cx="200" cy="40" r="1" fill="white" opacity="0.5"/>
+              <circle cx="230" cy="70" r="0.7" fill="white" opacity="0.3"/>
+              <circle cx="240" cy="200" r="1" fill="white" opacity="0.4"/>
+              <circle cx="30" cy="220" r="0.7" fill="white" opacity="0.3"/>
+              <circle cx="15" cy="80" r="0.5" fill="white" opacity="0.2"/>
+              <circle cx="245" cy="170" r="0.8" fill="white" opacity="0.35"/>
+
+              <!-- Labels -->
+              <line x1="85" y1="133" x2="70" y2="195" stroke="#00D4FF" stroke-width="0.75" stroke-dasharray="2,3" opacity="0.4"/>
+              <text x="52" y="204" font-family="monospace" font-size="6" fill="#00D4FF" text-anchor="middle" opacity="0.7">PAYLOAD</text>
+              <text x="52" y="212" font-family="monospace" font-size="6" fill="#00D4FF" text-anchor="middle" opacity="0.7">SLOT</text>
+            </svg>
+          </div>
+
+          <!-- RESULT CARDS -->
+          <div class="result-cards">
+            <div class="result-card">
+              <div class="result-card-title">Mission Summary</div>
+              <div class="result-row">
+                <span class="result-key">Application</span>
+                <span class="result-val highlight" id="res-app">Quantum Computing</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Payload Mass</span>
+                <span class="result-val" id="res-mass">50 g</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Power Allocation</span>
+                <span class="result-val" id="res-power">2.5 W</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Payload Volume</span>
+                <span class="result-val" id="res-dims">8 × 6 × 3 cm</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Mission Duration</span>
+                <span class="result-val" id="res-duration">1 Year</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Temperature Env.</span>
+                <span class="result-val highlight">12–20 mK</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Thermal Stability</span>
+                <span class="result-val highlight">8 µK rms</span>
+              </div>
+              <div class="result-row">
+                <span class="result-key">Orbit</span>
+                <span class="result-val">Low Earth Orbit</span>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div class="result-card-title" id="metrics-title">Application Metrics</div>
+              <div id="metrics-body"></div>
+            </div>
+
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+              <button class="btn-primary" onclick="showModal()" style="flex:1;justify-content:center;">
+                Book This Configuration
+              </button>
+              <button class="btn-ghost" onclick="startOver()">
+                Start Over
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end config-body -->
+
+    <div class="config-footer">
+      <div id="footer-left">
+        <button class="btn-ghost hidden" id="btn-back" onclick="goBack()">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back
+        </button>
+      </div>
+      <div id="footer-right">
+        <button class="btn-primary" id="btn-next" onclick="goNext()">
+          Continue
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer style="padding:2.5rem 2rem;text-align:center;border-top:1px solid var(--border);position:relative;z-index:1;">
+  <div style="font-family:'Inter',sans-serif;font-size:0.8rem;color:var(--text-muted);letter-spacing:0.02em;">
+    <span style="color:var(--cyan);font-weight:600;">Supercool</span> · We're building a refrigerator for space. · Techstars Startup Weekend · USC · 2026
+  </div>
+</footer>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-check">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M6 14l6 6 10-10" stroke="#00D4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 class="modal-title">Mission Configuration<br>Submitted</h2>
+    <p class="modal-sub">Our engineering team will review your payload specifications and reach out within 48 hours to discuss mission requirements, integration timelines, and pricing.</p>
+    <div class="mission-id">Mission ID: SC-2026-0847</div>
+    <button class="btn-ghost" onclick="closeModal()" style="width:100%;justify-content:center;">Close</button>
+  </div>
+</div>
+
+<script>
+  // ── STARFIELD ──
+  (function() {
+    const sf = document.getElementById('starfield');
+    for (let i = 0; i < 120; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() < 0.8 ? Math.random() * 1.5 + 0.5 : Math.random() * 2.5 + 1.5;
+      const opacity = size > 2 ? 0.7 : Math.random() * 0.5 + 0.2;
+      s.style.cssText = `
+        left:${Math.random()*100}%;
+        top:${Math.random()*100}%;
+        width:${size}px;
+        height:${size}px;
+        --base-opacity:${opacity};
+        --dur:${Math.random()*5+3}s;
+        --delay:${Math.random()*5}s;
+      `;
+      sf.appendChild(s);
+    }
+  })();
+
+  // ── STATE ──
+  let currentStep = 1;
+  let selectedApp = null;
+
+  const appNames = {
+    'quantum-computing': 'Quantum Computing',
+    'qkd': 'Quantum Key Distribution',
+    'quantum-clock': 'Quantum Clocks / GPS',
+    'hyperspectral': 'Hyperspectral Imaging',
+    'ir-defense': 'IR Detection / Defense',
+    'custom': 'Custom / Research'
+  };
+
+  const appMetrics = {
+    'quantum-computing': [
+      { key: 'Qubit Coherence Time', val: '+340% vs. ground lab', highlight: true },
+      { key: 'Temperature Stability', val: '8 µK rms', highlight: true },
+      { key: 'Vibration Env.', val: 'Near-zero (LEO)', highlight: false },
+      { key: 'Thermal Uniformity', val: '< 1 µK across chip', highlight: false },
+      { key: 'EM Shielding', val: 'Integrated Faraday cage', highlight: false },
+    ],
+    'qkd': [
+      { key: 'Key Generation Rate', val: '1 Mbit/s (peak)', highlight: true },
+      { key: 'Orbital Coverage', val: '~1,400 km swath', highlight: true },
+      { key: 'Link Security Level', val: 'BB84 + E91 hybrid', highlight: false },
+      { key: 'Detector Dark Count', val: '< 100 cps cryo-cooled', highlight: false },
+      { key: 'Downlink Latency', val: '< 300 ms', highlight: false },
+    ],
+    'quantum-clock': [
+      { key: 'GPS Accuracy', val: 'mm–cm level (vs. meters)', highlight: true },
+      { key: 'Timing Precision', val: '10⁻¹⁸ fractional', highlight: true },
+      { key: 'Constellation Compat.', val: 'GPS, Galileo, GLONASS', highlight: false },
+      { key: 'Drift Rate', val: '< 1 ns / year', highlight: false },
+      { key: 'Mission Life', val: 'Up to 3+ years', highlight: false },
+    ],
+    'hyperspectral': [
+      { key: 'Spectral Resolution', val: '< 1 nm FWHM', highlight: true },
+      { key: 'Spatial Resolution', val: '3× improvement over ambient', highlight: true },
+      { key: 'Imaging Bands', val: 'SWIR / MWIR / LWIR', highlight: false },
+      { key: 'Detector Noise', val: 'NEI < 10⁻¹² W/cm²', highlight: false },
+      { key: 'Scene Refresh', val: 'Daily revisit (LEO)', highlight: false },
+    ],
+    'ir-defense': [
+      { key: 'IR Sensitivity', val: '10⁻¹⁵ W / √Hz (NETD)', highlight: true },
+      { key: 'Detection Range', val: '+500 km vs. ambient', highlight: true },
+      { key: 'Tracking Precision', val: '< 0.1 mrad angular res.', highlight: false },
+      { key: 'SNR Improvement', val: '10,000× vs. uncooled', highlight: false },
+      { key: 'False Alarm Rate', val: '< 10⁻⁶ per frame', highlight: false },
+    ],
+    'custom': [
+      { key: 'Temperature Range', val: '12–20 mK (configurable)', highlight: true },
+      { key: 'Payload Volume', val: 'Up to 5 × 10 × 10 cm', highlight: true },
+      { key: 'Power Budget', val: 'Up to 15 W available', highlight: false },
+      { key: 'Data Interface', val: 'SPI / I²C / custom', highlight: false },
+      { key: 'Metrics', val: 'Contact us for custom specs', highlight: false },
+    ]
+  };
+
+  // ── APP SELECTION ──
+  function selectApp(el) {
+    document.querySelectorAll('.app-select-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedApp = el.dataset.app;
+  }
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    for (let i = 1; i <= 3; i++) {
+      const prog = document.getElementById(`prog-${i}`);
+      prog.classList.remove('active', 'done');
+      if (i < currentStep) prog.classList.add('done');
+      else if (i === currentStep) prog.classList.add('active');
+    }
+    for (let i = 1; i <= 2; i++) {
+      const conn = document.getElementById(`conn-${i}`);
+      conn.classList.toggle('done', i < currentStep);
+    }
+  }
+
+  function showPanel(n) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById(`step-${n}`);
+    if (panel) panel.classList.add('active');
+  }
+
+  // ── NAVIGATION ──
+  function goNext() {
+    if (currentStep === 1) {
+      if (!selectedApp) {
+        alert('Please select an application to continue.');
+        return;
+      }
+      currentStep = 2;
+      showPanel(2);
+      document.getElementById('btn-back').classList.remove('hidden');
+      updateProgress();
+    } else if (currentStep === 2) {
+      runConfiguration();
+    }
+  }
+
+  function goBack() {
+    if (currentStep === 2) {
+      currentStep = 1;
+      showPanel(1);
+      document.getElementById('btn-back').classList.add('hidden');
+      document.getElementById('btn-next').classList.remove('hidden');
+      document.getElementById('btn-next').textContent = '';
+      document.getElementById('btn-next').innerHTML = 'Continue <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      updateProgress();
+    } else if (currentStep === 3) {
+      currentStep = 2;
+      showPanel(2);
+      document.getElementById('btn-next').classList.remove('hidden');
+      document.getElementById('btn-next').innerHTML = 'Generate Configuration <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      updateProgress();
+    }
+  }
+
+  function runConfiguration() {
+    // Show loading
+    showPanel(null);
+    document.getElementById('loading-screen').classList.add('active');
+    document.getElementById('btn-next').classList.add('hidden');
+    document.getElementById('btn-back').classList.add('hidden');
+    currentStep = 3;
+    updateProgress();
+
+    setTimeout(() => {
+      document.getElementById('loading-screen').classList.remove('active');
+      populateResults();
+      showPanel(3);
+      document.getElementById('btn-back').classList.remove('hidden');
+      document.getElementById('btn-next').classList.add('hidden');
+    }, 800);
+  }
+
+  function populateResults() {
+    const mass = document.getElementById('mass-slider').value;
+    const power = document.getElementById('power-input').value;
+    const dimL = document.getElementById('dim-l').value;
+    const dimW = document.getElementById('dim-w').value;
+    const dimH = document.getElementById('dim-h').value;
+    const duration = document.getElementById('mission-duration');
+    const durationText = duration.options[duration.selectedIndex].text;
+
+    document.getElementById('res-app').textContent = appNames[selectedApp];
+    document.getElementById('res-mass').textContent = `${mass} g`;
+    document.getElementById('res-power').textContent = `${power} W`;
+    document.getElementById('res-dims').textContent = `${dimL} × ${dimW} × ${dimH} cm`;
+    document.getElementById('res-duration').textContent = durationText;
+
+    // Metrics
+    const metrics = appMetrics[selectedApp] || appMetrics['custom'];
+    document.getElementById('metrics-title').textContent = appNames[selectedApp] + ' — Performance Metrics';
+    document.getElementById('metrics-body').innerHTML = metrics.map(m => `
+      <div class="result-row">
+        <span class="result-key">${m.key}</span>
+        <span class="result-val ${m.highlight ? 'highlight' : ''}">${m.val}</span>
+      </div>
+    `).join('');
+  }
+
+  function startOver() {
+    currentStep = 1;
+    selectedApp = null;
+    document.querySelectorAll('.app-select-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('btn-back').classList.add('hidden');
+    document.getElementById('btn-next').classList.remove('hidden');
+    document.getElementById('btn-next').innerHTML = 'Continue <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    showPanel(1);
+    updateProgress();
+    document.getElementById('configurator').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ── MODAL ──
+  function showModal() {
+    document.getElementById('modal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+    document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+
+</body>
+</html>
